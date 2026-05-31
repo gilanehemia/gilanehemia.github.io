@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Case Study: Enterprise Release Notes Automation Pipeline — Gila Nehemia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f0f11;
+      --surface:   #18181c;
+      --border:    #2a2a30;
+      --text:      #e8e6e1;
+      --muted:     #888890;
+      --accent:    #c8a96e;
+      --green:     #1a6b50;
+      --green-lt:  #f0f7f4;
+      --blue:      #3a7abf;
+      --blue-lt:   #eef4fb;
+      --white:     #ffffff;
+      --radius:    10px;
+      --max-w:     780px;
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-serif:'Lora', Georgia, serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 1rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Nav ── */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(15,15,17,0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav__logo {
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      color: var(--white);
+    }
+    .nav__back {
+      font-size: 0.85rem;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .nav__back:hover { color: var(--accent); text-decoration: none; }
+
+    /* ── Layout ── */
+    .page {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 5rem 1.5rem 4rem;
+    }
+
+    /* ── Header ── */
+    .cs-header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .cs-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    .cs-title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--white);
+      margin-bottom: 0.75rem;
+    }
+    .cs-subtitle {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 620px;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+    .cs-meta {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .cs-meta a { color: var(--muted); }
+    .cs-meta a:hover { color: var(--accent); }
+
+    /* ── Status box ── */
+    .status-box {
+      display: flex;
+      gap: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 3rem;
+      align-items: flex-start;
+    }
+    .status-badge {
+      flex-shrink: 0;
+    }
+    .status-badge strong {
+      display: block;
+      font-size: 1.4rem;
+      color: var(--white);
+      font-weight: 700;
+    }
+    .status-badge span {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .status-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+      border-left: 1px solid var(--border);
+      padding-left: 1.5rem;
+    }
+
+    /* ── Sections ── */
+    .section { margin-bottom: 3rem; }
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .section hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 1rem;
+      line-height: 1.3;
+    }
+
+    p { color: var(--muted); margin-bottom: 1rem; font-size: 0.95rem; }
+    p:last-child { margin-bottom: 0; }
+
+    /* ── Blockquote ── */
+    blockquote {
+      background: var(--blue-lt);
+      border-left: 4px solid var(--blue);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: #444;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .green-quote {
+      background: rgba(26,107,80,0.08);
+      border-left: 4px solid var(--green);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    /* ── Momentum grid ── */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 1.5rem 0;
+    }
+    .grid-3-cell {
+      padding: 1rem 1.25rem;
+      border-right: 1px solid var(--border);
+    }
+    .grid-3-cell:last-child { border-right: none; }
+    .grid-3-cell strong {
+      display: block;
+      font-size: 0.88rem;
+      color: var(--text);
+      margin-bottom: 0.35rem;
+    }
+    .grid-3-cell p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    /* ── Engineering progression ── */
+    .progression { display: flex; flex-direction: column; gap: 1rem; margin: 1rem 0; }
+    .prog-item { display: flex; gap: 1rem; align-items: flex-start; }
+    .prog-arrow {
+      color: var(--green);
+      font-weight: 700;
+      font-size: 1rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .prog-content strong {
+      display: block;
+      color: var(--text);
+      font-size: 0.95rem;
+      margin-bottom: 0.2rem;
+    }
+    .prog-content p { margin: 0; font-size: 0.88rem; }
+
+    /* ── Orchestrator ── */
+    .orch-header {
+      background: var(--green);
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 0.75rem 1rem;
+      font-size: 0.78rem;
+      color: var(--white);
+    }
+    .orch-header strong { display: block; font-weight: 700; letter-spacing: 0.05em; }
+    .orch-header span { opacity: 0.85; }
+    .orch-skills {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+    }
+    .orch-skill {
+      padding: 1rem 1.1rem;
+      border-right: 1px solid var(--border);
+    }
+    .orch-skill:last-child { border-right: none; }
+    .orch-skill .num { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.25rem; }
+    .orch-skill strong { display: block; font-size: 0.88rem; color: var(--text); margin-bottom: 0.25rem; }
+    .orch-skill .out { font-size: 0.78rem; color: var(--muted); }
+
+    /* ── Skill cards ── */
+    .skill-cards { display: flex; flex-direction: column; gap: 0.75rem; margin: 1rem 0; }
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+      transition: border-color 0.2s;
+    }
+    .skill-card:hover { border-color: var(--accent); }
+    .skill-num {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--muted);
+      flex-shrink: 0;
+      width: 2rem;
+    }
+    .skill-content strong {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--white);
+      margin-bottom: 0.35rem;
+    }
+    .skill-content p { font-size: 0.875rem; margin-bottom: 0.5rem; }
+    .skill-tags { font-size: 0.78rem; color: var(--green); }
+
+    /* ── Outputs ── */
+    .outputs {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+    .output-cell {
+      padding: 1rem 0.75rem;
+      border-right: 1px solid var(--border);
+      text-align: center;
+    }
+    .output-cell:last-child { border-right: none; }
+    .output-cell .out-label { font-size: 0.72rem; color: var(--muted); display: block; margin-bottom: 0.35rem; }
+    .output-cell strong { font-size: 0.82rem; color: var(--text); display: block; line-height: 1.4; }
+
+    /* ── Tools ── */
+    .tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+    .tool-tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.3rem 0.75rem;
+      font-size: 0.82rem;
+      color: var(--text);
+    }
+
+    /* ── Outcome ── */
+    .outcome-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+    }
+    .outcome-box p { font-size: 0.95rem; line-height: 1.8; color: var(--muted); margin: 0; }
+
+    /* ── Download bar ── */
+    .download-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .download-bar p { margin: 0; font-size: 0.85rem; color: var(--muted); }
+    .btn {
+      display: inline-block;
+      padding: 0.6rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: var(--accent);
+      color: #0f0f11;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn:hover { background: transparent; border: 2px solid var(--accent); color: var(--accent); text-decoration: none; }
+    .btn { border: 2px solid var(--accent); }
+
+    @media (max-width: 640px) {
+      .grid-3, .orch-skills, .outputs { grid-template-columns: 1fr; }
+      .grid-3-cell, .orch-skill, .output-cell { border-right: none; border-bottom: 1px solid var(--border); }
+      .status-box { flex-direction: column; }
+      .status-desc { border-left: none; border-top: 1px solid var(--border); padding-left: 0; padding-top: 1rem; }
+      .outputs { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a class="nav__logo" href="index.html">Gila Nehemia</a>
+    <a class="nav__back" href="index.html">← Back to Portfolio</a>
+  </nav>
+
+  <div class="page">
+
+    <!-- HEADER -->
+    <header class="cs-header">
+      <span class="cs-label">Portfolio Case Study</span>
+      <h1 class="cs-title">Enterprise Release Notes Automation Pipeline</h1>
+      <p class="cs-subtitle">
+        A full project lifecycle: from pain point discovery to a working AI-powered
+        content operations system, for complex multi-phase software and hardware releases.
+      </p>
+      <p class="cs-meta">
+        Gila (Geetha) Nehemia &nbsp;·&nbsp;
+        <a href="mailto:gnehemia@gmail.com">gnehemia@gmail.com</a> &nbsp;·&nbsp;
+        <a href="https://linkedin.com/in/gnehemia" target="_blank" rel="noopener">linkedin.com/in/gnehemia</a>
+      </p>
+    </header>
+
+    <!-- DOWNLOAD BAR -->
+    <div class="download-bar">
+      <p>Prefer to read offline? Download the PDF version.</p>
+      <a href="Gila_Nehemia_Case_Study.pdf" class="btn" target="_blank">Download PDF →</a>
+    </div>
+
+    <!-- STATUS -->
+    <div class="status-box">
+      <div class="status-badge">
+        <strong>Active</strong>
+        <span>pilot in progress</span>
+      </div>
+      <div class="status-desc">
+        A documentation pipeline that previously required significant manual effort
+        across every release cycle now runs automatically, significantly reducing
+        manual production time. Formal metrics collection is underway as part of
+        an active structured pilot.
+      </div>
+    </div>
+
+    <!-- HOW IT STARTED -->
+    <div class="section">
+      <hr />
+      <span class="section-label">How It Started</span>
+      <p>This wasn't a top-down AI initiative. It started with one person solving her own problem.</p>
+      <blockquote>
+        "I wasn't trying to build an AI pilot. I was trying to solve my own problem. The work
+        opened conversations with senior leadership, generated demo requests across teams, and
+        connected me to the organization's broader AI initiatives. The solution spoke for itself."
+      </blockquote>
+      <p>
+        The pilot created organic momentum that no formal program produced. It was built from
+        real frustration, real expertise, and a genuine need to do better work.
+      </p>
+      <div class="grid-3">
+        <div class="grid-3-cell">
+          <strong>Senior leadership conversations</strong>
+          <p>Work surfaced to senior manager organically through results</p>
+        </div>
+        <div class="grid-3-cell">
+          <strong>Cross-team AI pilot connection</strong>
+          <p>Linked to broader organizational AI initiatives led by another manager</p>
+        </div>
+        <div class="grid-3-cell">
+          <strong>Demo requests</strong>
+          <p>Colleagues and stakeholders asked to see the work firsthand</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORIGIN -->
+    <div class="section">
+      <hr />
+      <span class="section-label">Origin</span>
+      <p>
+        A year before the first line of automation was built, a colleague and I identified
+        that the release notes process was fundamentally broken. We didn't jump to a solution.
+        We documented the pain points, produced design documentation, a phased pilot plan, and
+        a testing plan, then built.
+      </p>
+    </div>
+
+    <!-- THE PROBLEM -->
+    <div class="section">
+      <hr />
+      <span class="section-label">The Problem</span>
+      <p>
+        Enterprise release notes for large-scale software products are manually intensive,
+        inconsistent across product lines, and difficult to scale across service pack releases
+        and hardware integrations. Each release cycle required significant human effort across
+        multiple enterprise systems with no automated handoffs between them.
+      </p>
+    </div>
+
+    <!-- THE INSIGHT -->
+    <div class="section">
+      <hr />
+      <span class="section-label">The Insight</span>
+      <p>
+        My own release note workflow, built over years of enterprise documentation experience,
+        could be deconstructed into discrete, testable steps and encoded into an AI pipeline.
+        Rather than starting from scratch, I digitized my own expertise into a replicable,
+        automated system that applies institutional knowledge as a guardrail at every step.
+      </p>
+    </div>
+
+    <!-- ARCHITECTURE -->
+    <div class="section">
+      <hr />
+      <span class="section-label">Architecture</span>
+      <p>
+        The pipeline is built as 6 modular, independently testable skills, each consuming
+        the output of the one before it. A shared content generation engine is called by
+        multiple skills, applying institutional style guide and terminology guardrails
+        consistently. Example XML structures are embedded directly within each skill, enabling
+        the system to generate correctly structured output files from scratch.
+      </p>
+      <div class="green-quote">
+        Designing each skill as a small, discrete unit means errors can be isolated at the
+        module level without disrupting the rest of the pipeline. The same principle used in
+        software engineering. Build once, reuse everywhere.
+      </div>
+    </div>
+
+    <!-- ENGINEERING PROGRESSION -->
+    <div class="section">
+      <hr />
+      <span class="section-label">Engineering Progression</span>
+      <p>It follows a deliberate engineering arc, the same progression used by professional AI engineering teams:</p>
+      <div class="progression">
+        <div class="prog-item">
+          <span class="prog-arrow">→</span>
+          <div class="prog-content">
+            <strong>Deterministic model</strong>
+            <p>Built first. Rule-based, predictable, controlled outputs. Every input produces the same output. The foundation was made reliable before any intelligence was layered on top.</p>
+          </div>
+        </div>
+        <div class="prog-item">
+          <span class="prog-arrow">→</span>
+          <div class="prog-content">
+            <strong>JSON logging and observability</strong>
+            <p>The pipeline is fully instrumented. Every action is logged, traceable, and auditable, enabling debugging, improvement, and future metrics collection.</p>
+          </div>
+        </div>
+        <div class="prog-item">
+          <span class="prog-arrow">→</span>
+          <div class="prog-content">
+            <strong>Python processing</strong>
+            <p>Connective tissue that moves structured data intelligently between enterprise systems at each stage of the pipeline.</p>
+          </div>
+        </div>
+        <div class="prog-item">
+          <span class="prog-arrow">→</span>
+          <div class="prog-content">
+            <strong>Guardrails</strong>
+            <p>AI behavior is constrained by institutional knowledge: style guide, terminology file, and embedded XML templates, keeping quality consistent and outputs compliant.</p>
+          </div>
+        </div>
+        <div class="prog-item">
+          <span class="prog-arrow">→</span>
+          <div class="prog-content">
+            <strong>Agentic reasoning</strong>
+            <p>During testing, the model demonstrated agentic behavior: it identified a version mismatch unprompted and asked whether to extend logic to the next release, anticipating the next step without being instructed to. Full agentic deployment is in progress.</p>
+          </div>
+        </div>
+        <div class="prog-item">
+          <span class="prog-arrow">→</span>
+          <div class="prog-content">
+            <strong>Programmatic CCMS integration</strong>
+            <p>In progress. Direct API access to the enterprise content management system will eliminate the final manual handoff, completing a fully continuous pipeline from source data to published documentation.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORCHESTRATOR LAYER -->
+    <div class="section">
+      <hr />
+      <span class="section-label">Orchestrator Layer</span>
+      <p>
+        Three of the pipeline's core data-processing skills are linked and sequenced by a
+        Windsurf-native orchestrator, a coordination layer that manages execution, state
+        handoff, and routing programmatically. Rather than triggering each skill manually,
+        the orchestrator fires all three in a single automated run, passing structured output
+        from each skill directly to the next.
+      </p>
+      <div class="orch-header">
+        <strong>WINDSURF ORCHESTRATOR</strong>
+        <span>Single invocation: routes and sequences all three skills programmatically</span>
+      </div>
+      <div class="orch-skills">
+        <div class="orch-skill">
+          <div class="num">01</div>
+          <strong>Deferred Issue Validator</strong>
+          <div class="out">↓ annotated XML</div>
+        </div>
+        <div class="orch-skill">
+          <div class="num">02</div>
+          <strong>Resolution Detector</strong>
+          <div class="out">↓ status-annotated XML</div>
+        </div>
+        <div class="orch-skill">
+          <div class="num">03</div>
+          <strong>File Transform Engine</strong>
+          <div class="out">↓ 3 output files</div>
+        </div>
+      </div>
+      <p>
+        Windsurf's MCP server integration gives the orchestrator direct, programmatic access
+        to the engineering issue tracking system and the file system. Each skill runs as an
+        instrumented unit and the orchestrator reads its JSON-logged output to determine
+        routing for the next skill. No manual handoff, no context switch between tools.
+      </p>
+    </div>
+
+    <!-- THE SIX SKILLS -->
+    <div class="section">
+      <hr />
+      <span class="section-label">The Six Skills</span>
+      <div class="skill-cards">
+        <div class="skill-card">
+          <div class="skill-num">01</div>
+          <div class="skill-content">
+            <strong>Deferred issue validator</strong>
+            <p>Queries the engineering issue tracking system to identify deferred issues. Cross-references the master XML file, flags new deferred issues, and generates compliant first-draft documentation using the shared content generation engine.</p>
+            <div class="skill-tags">■ uses content generation engine &nbsp; ↓ annotated XML &nbsp; ↓ first-draft content</div>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-num">02</div>
+          <div class="skill-content">
+            <strong>Resolution detector</strong>
+            <p>Scans the engineering issue tracking system and enterprise knowledge base for resolved issues. Annotates the XML file with fixed-status comments, transforming it into a live document that reflects current release state at all times.</p>
+            <div class="skill-tags">↓ status-annotated XML</div>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-num">03</div>
+          <div class="skill-content">
+            <strong>File transformation engine</strong>
+            <p>Rebuilds the known issues file so only current deferred issues remain. Simultaneously generates two new XML files from scratch using embedded template structures: one for resolved issues, one for new features processing.</p>
+            <div class="skill-tags">↓ rebuilt known issues XML &nbsp; ↓ resolved issues XML &nbsp; ↓ new features XML</div>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-num">04</div>
+          <div class="skill-content">
+            <strong>New features extractor</strong>
+            <p>Simultaneously queries the engineering issue tracking system and design platform to pull feature data, bridging engineering tickets and design artifacts automatically. Passes structured data to the content generation engine for compliant first-draft content.</p>
+            <div class="skill-tags">■ uses content generation engine &nbsp; ↓ completed new features XML &nbsp; ↓ first-draft content</div>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-num">05</div>
+          <div class="skill-content">
+            <strong>Content generation engine</strong>
+            <p>Shared service used across the pipeline. Takes structured data and generates compliant first-draft content using the institutional style guide and terminology file as guardrails, producing on-brand, accurate documentation before a human ever touches it.</p>
+            <div class="skill-tags">■ shared service · called by skills 01 and 04</div>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-num">06</div>
+          <div class="skill-content">
+            <strong>SME notification engine</strong>
+            <p>Automatically posts a comment in the engineering issue tracking system to the responsible subject matter expert when a new deferred issue is documented, closing the loop between automation and human review without manual tracking.</p>
+            <div class="skill-tags">↓ automated SME notification</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WHAT THE PIPELINE PRODUCES -->
+    <div class="section">
+      <hr />
+      <span class="section-label">What the Pipeline Produces</span>
+      <p>Five outputs from one pipeline run, all compliant, correctly structured, and routed for review.</p>
+      <div class="outputs">
+        <div class="output-cell">
+          <span class="out-label">Output 01</span>
+          <strong>Rebuilt known issues XML</strong>
+        </div>
+        <div class="output-cell">
+          <span class="out-label">Output 02</span>
+          <strong>Resolved issues XML</strong>
+        </div>
+        <div class="output-cell">
+          <span class="out-label">Output 03</span>
+          <strong>New features XML</strong>
+        </div>
+        <div class="output-cell">
+          <span class="out-label">Output 04</span>
+          <strong>First-draft content for all sections</strong>
+        </div>
+        <div class="output-cell">
+          <span class="out-label">Output 05</span>
+          <strong>Automated SME review notification</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOOLS -->
+    <div class="section">
+      <hr />
+      <span class="section-label">Tools and Integration</span>
+      <div class="tools">
+        <span class="tool-tag">Python</span>
+        <span class="tool-tag">JSON processing</span>
+        <span class="tool-tag">XML manipulation</span>
+        <span class="tool-tag">Template-driven generation</span>
+        <span class="tool-tag">Windsurf</span>
+        <span class="tool-tag">MCP server integration</span>
+        <span class="tool-tag">Orchestrator layer</span>
+        <span class="tool-tag">Engineering issue tracking</span>
+        <span class="tool-tag">Enterprise knowledge base</span>
+        <span class="tool-tag">Design platform integration</span>
+        <span class="tool-tag">Enterprise CCMS</span>
+        <span class="tool-tag">Agentic workflow design</span>
+        <span class="tool-tag">Modular pipeline architecture</span>
+      </div>
+    </div>
+
+    <!-- OUTCOME -->
+    <div class="section">
+      <hr />
+      <span class="section-label">Outcome</span>
+      <div class="outcome-box">
+        <p>
+          A working, enterprise-scale AI content operations pipeline built from first principles:
+          originated through collaborative pain point discovery, governed by formal project
+          artifacts, and engineered through a deliberate progression from deterministic model to
+          instrumented, guardrailed system with agentic behavior demonstrated in testing and full
+          agentic deployment in progress. A Windsurf-native orchestrator links three automation
+          skills (Deferred issue validator, Resolution detector, and File transformation engine),
+          executing them in sequence and completing the full data ingestion and transformation
+          phase in seconds from a single invocation. Integrated across five enterprise systems
+          with programmatic CCMS integration in progress. Significantly reducing manual release
+          note production time with formal metrics collection underway as part of an active
+          structured pilot. Generated organic senior leadership conversations, cross-team demo
+          requests, and connection to broader organizational AI initiatives, all without a formal
+          mandate. Actively advocating for formal engineering partnership to scale the model
+          organization-wide and connect documentation quality to measurable reductions in service
+          calls. Designed, built, and operated by one person.
+        </p>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+
+</body>
+</html>
