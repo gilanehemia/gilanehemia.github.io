@@ -17,7 +17,7 @@ const observer = new IntersectionObserver(
 document.querySelectorAll('.card, .writing-card, .about__text, .about__skills, .hero__inner, .contact__inner')
   .forEach(el => { el.classList.add('fade-in'); observer.observe(el); });
 
-// Contact form — submit via AJAX, stay on page
+// Contact form: submit via AJAX, stay on page
 const form = document.querySelector('.contact-form');
 form?.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -42,7 +42,7 @@ form?.addEventListener('submit', async (e) => {
           <p style="color:var(--clr-muted); font-size:0.9rem;">Thanks for reaching out. I'll get back to you soon.</p>
         </div>`;
     } else {
-      btn.textContent = 'Something went wrong — try again';
+      btn.textContent = 'Something went wrong, try again';
       btn.disabled = false;
     }
   } catch {
