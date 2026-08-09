@@ -371,6 +371,39 @@
     .btn:hover { background: transparent; border: 2px solid var(--accent); color: var(--accent); text-decoration: none; }
     .btn { border: 2px solid var(--accent); }
 
+    /* ── Print / PDF ── */
+    @media print {
+      :root {
+        --bg:      #ffffff;
+        --surface: #fafafa;
+        --border:  #dddde2;
+        --text:    #1a1a1a;
+        --muted:   #55555f;
+        --accent:  #8a6d2f;
+      }
+      @page { size: letter; margin: 0.6in 0.7in; }
+      body { background: #fff; color: #1a1a1a; font-size: 10.5pt; line-height: 1.55; }
+      .nav, .download-bar { display: none !important; }
+      .page { max-width: none; padding: 0; }
+      a { color: #1a1a1a; text-decoration: none; }
+      .cs-title, h2, .skill-content strong, .status-badge strong,
+      .grid-3-cell strong, .orch-skill strong, .output-cell strong,
+      .prog-content strong { color: #111 !important; }
+      .cs-label, .section-label { color: #6a6a75 !important; }
+      p, .status-desc, .cs-subtitle { color: #33333a !important; }
+      blockquote { background: #eef4fb !important; color: #333 !important; }
+      .green-quote { background: #f0f7f4 !important; color: #2a4a40 !important; }
+      .orch-header { background: #1a6b50 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .tool-tag, .skill-card, .status-box, .outcome-box { background: #fafafa !important; }
+      .section { margin-bottom: 1.3rem; }
+      .skill-card, .status-box, .grid-3, .orch-skills, .outputs,
+      .prog-item, .orch-header + .orch-skills { page-break-inside: avoid; }
+      .orch-header { page-break-after: avoid; }
+      blockquote, .green-quote { page-break-inside: avoid; }
+      h2, .section-label { page-break-after: avoid; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+
     @media (max-width: 640px) {
       .grid-3, .orch-skills, .outputs { grid-template-columns: 1fr; }
       .grid-3-cell, .orch-skill, .output-cell { border-right: none; border-bottom: 1px solid var(--border); }
