@@ -381,8 +381,15 @@
         --muted:   #55555f;
         --accent:  #8a6d2f;
       }
-      @page { size: letter; margin: 0.6in 0.7in; }
-      body { background: #fff; color: #1a1a1a; font-size: 10.5pt; line-height: 1.55; }
+      @page { size: letter; margin: 0.5in 0.65in; }
+      html { font-size: 12.3px; }
+      body { background: #fff; color: #1a1a1a; line-height: 1.45; }
+      .cs-header { margin-bottom: 0.9rem; padding-bottom: 0.6rem; }
+      .cs-label { font-size: 7.5pt; margin-bottom: 0.25rem; }
+      .cs-title { font-size: 17pt; margin-bottom: 0.35rem; }
+      .cs-meta { font-size: 8.2pt; }
+      .section p { margin-bottom: 0.55rem; }
+      .green-quote { padding: 0.55rem 0.9rem; margin: 0.65rem 0; font-size: 9.2pt; line-height: 1.45; }
       .nav, .download-bar { display: none !important; }
       .page { max-width: none; padding: 0; }
       a { color: #1a1a1a; text-decoration: none; }
@@ -422,17 +429,9 @@
 
   <div class="page">
 
-    <!-- HEADER -->
     <header class="cs-header">
       <span class="cs-label">Portfolio Case Study</span>
       <h1 class="cs-title">Enterprise Release Notes Automation Pipeline</h1>
-      <p class="cs-subtitle">
-        A full project lifecycle: from pain point discovery to a working AI-powered
-        content operations system that makes customer-facing release notes more accurate
-        and more consistent, for complex multi-phase enterprise software releases,
-        including the documentation, training, and enablement that moved it from one
-        person's workflow to an org-wide practice.
-      </p>
       <p class="cs-meta">
         Gila (Geetha) Nehemia &nbsp;·&nbsp;
         <a href="mailto:gnehemia@gmail.com">gnehemia@gmail.com</a> &nbsp;·&nbsp;
@@ -440,418 +439,93 @@
       </p>
     </header>
 
-    <!-- DOWNLOAD BAR -->
     <div class="download-bar">
       <p>Prefer to read offline? Download the PDF version.</p>
       <a href="Gila_Nehemia_Case_Study.pdf" class="btn" target="_blank">Download PDF →</a>
     </div>
 
-    <!-- STATUS -->
-    <div class="status-box">
-      <div class="status-badge">
-        <strong>Pre-production</strong>
-        <span>pilot complete</span>
-      </div>
-      <div class="status-desc">
-        A documentation pipeline that previously required significant manual effort
-        across every release cycle now runs automatically, reducing manual production
-        time by over 70% while improving the technical accuracy and consistency of
-        the release notes customers actually read. The structured pilot is complete,
-        with formal metrics collected, and the pipeline has moved into pre-production.
-      </div>
-    </div>
-
-    <!-- HOW IT STARTED -->
     <div class="section">
-      <hr />
-      <span class="section-label">How It Started</span>
-      <p>This wasn't a top-down AI initiative. It started with one person solving her own problem.</p>
-      <blockquote>
-        "I wasn't trying to build an AI pilot. I was trying to solve my own problem. The work
-        opened conversations with senior leadership, generated demo requests across teams, and
-        connected me to the organization's broader AI initiatives. The solution spoke for itself."
-      </blockquote>
       <p>
-        The pilot created organic momentum that no formal program produced. It was built from
-        real frustration, real expertise, and a genuine need to do better work.
-      </p>
-      <div class="grid-3">
-        <div class="grid-3-cell">
-          <strong>Senior leadership conversations</strong>
-          <p>Work surfaced to senior manager organically through results</p>
-        </div>
-        <div class="grid-3-cell">
-          <strong>Cross-team AI pilot connection</strong>
-          <p>Linked to broader organizational AI initiatives led by another manager</p>
-        </div>
-        <div class="grid-3-cell">
-          <strong>Demo requests</strong>
-          <p>Colleagues and stakeholders asked to see the work firsthand</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ORIGIN -->
-    <div class="section">
-      <hr />
-      <span class="section-label">Origin</span>
-      <p>
-        A year before the first line of automation was built, a colleague and I identified
-        that the release notes process was fundamentally broken. We didn't jump to a solution.
-        We documented the pain points, produced design documentation, a phased pilot plan, and
-        a testing plan, then built.
-      </p>
-    </div>
-
-    <!-- THE PROBLEM -->
-    <div class="section">
-      <hr />
-      <span class="section-label">The Problem</span>
-      <p>
-        Release notes are a customer-facing document. They are how a customer finds out which
-        issues were deferred and which were fixed. When the release notes are not clear, the
-        customer pays for it: in support tickets, in failed upgrades, in time spent guessing.
+        PowerFlex release notes are how a customer finds out what was fixed, what was deferred,
+        and what is new. When they are wrong or inconsistent, the customer pays for it in support
+        tickets, failed upgrades, and time spent guessing. Producing them meant extracting issue
+        data out of Jira by hand, then reviewing every defect and fix several times over, once for
+        technical accuracy, again for adherence to the company style guide, again after the data
+        changed. Every manual pass was a chance for a detail to drift, and the details that drift
+        are exactly the ones customers depend on.
       </p>
       <p>
-        Enterprise release notes for large-scale software products are manually intensive,
-        inconsistent across product lines, and difficult to scale across NPI and service pack
-        release cycles. Each release cycle required significant human effort across
-        multiple enterprise systems with no automated handoffs between them. Every manual
-        hand-copy between those systems was a chance for a detail to drift, and the details
-        that drift are exactly the ones customers depend on.
+        I decided to build this out of deep frustration with that process. A colleague and I had
+        named the problem a full year before any automation existed, and we did not jump to a tool.
+        We documented the pain points, wrote design documentation, a phased pilot plan, and a
+        testing plan, and only then started building. The insight that made it work was that my own
+        release note workflow, built over years of enterprise documentation practice, could be
+        broken into discrete, testable steps and encoded. Instead of teaching a model to write
+        release notes from scratch, I digitized expertise I already had and let it run as a
+        guardrail at every step.
       </p>
-    </div>
-
-    <!-- CUSTOMER IMPACT -->
-    <div class="section">
-      <hr />
-      <span class="section-label">Customer Impact</span>
       <p>
-        The goal was never to write release notes faster. It was to make them more accurate,
-        so customers can actually understand what changed and act on it with confidence.
+        The pipeline is six modular skills, each consuming the output of the one before it. One
+        queries Jira for deferred issues and drafts them. Another
+        scans that system and the enterprise knowledge base for resolutions and annotates the master
+        file, so it always reflects current release state. A transformation engine rebuilds the known
+        issues file and generates two more from embedded XML templates. A fourth pulls new
+        customer-facing capabilities from Jira and the design platform at once,
+        validating the data before it reaches content generation and reusing shared skills built by
+        other teams. A shared content generation engine, called by two of the skills, applies the
+        institutional style guide and terminology file as structural guardrails rather than
+        after-the-fact checks. The last posts a comment to the responsible subject matter expert when
+        a new deferred issue is documented, so review still happens where the expertise lives and the
+        automation does the tracking. One run produces five compliant, correctly structured outputs,
+        already routed for review.
       </p>
-      <div class="grid-3">
-        <div class="grid-3-cell">
-          <strong>Technical accuracy</strong>
-          <p>Data is pulled directly from engineering systems of record rather than re-keyed, removing transcription error from customer-facing content</p>
-        </div>
-        <div class="grid-3-cell">
-          <strong>Consistency across releases</strong>
-          <p>Customers see the same structure and terminology every cycle, so they know where to look and what the words mean</p>
-        </div>
-        <div class="grid-3-cell">
-          <strong>Completeness</strong>
-          <p>Automated cross-referencing catches deferred and resolved issues that manual passes miss, so nothing affecting a customer goes unreported</p>
-        </div>
-      </div>
       <p>
-        Reducing manual effort by over 70% is what made that possible. Time previously spent
-        copying data between systems now goes to the judgment work that automation cannot do:
-        deciding what a change actually means for a customer and saying it clearly.
-      </p>
-    </div>
-
-    <!-- THE INSIGHT -->
-    <div class="section">
-      <hr />
-      <span class="section-label">The Insight</span>
-      <p>
-        My own release note workflow, built over years of enterprise documentation experience,
-        could be deconstructed into discrete, testable steps and encoded into an AI pipeline.
-        Rather than starting from scratch, I digitized my own expertise into a replicable,
-        automated system that applies institutional knowledge as a guardrail at every step.
-      </p>
-    </div>
-
-    <!-- ARCHITECTURE -->
-    <div class="section">
-      <hr />
-      <span class="section-label">Architecture</span>
-      <p>
-        The pipeline is built as 6 modular, independently testable skills, each consuming
-        the output of the one before it. A shared content generation engine is called by
-        multiple skills, applying institutional style guide and terminology guardrails
-        consistently. Example XML structures are embedded directly within each skill, enabling
-        the system to generate correctly structured output files from scratch.
+        It was engineered in the order a professional AI team would use. The deterministic,
+        rule-based version came first, so the foundation was predictable before any intelligence sat
+        on top of it. JSON logging made every action traceable. Python moved structured data between
+        enterprise systems at each stage. A Devin-native orchestrator now sequences three of the core
+        skills in a single invocation, using MCP server integration to reach Jira and the file
+        system directly and reading each skill's logged output to route the next one. It is an
+        orchestrator I built in Devin, and it automates whole sections of the PowerFlex release
+        notes end to end. During
+        testing, the model flagged a version mismatch unprompted and asked whether to extend the
+        logic to the next release. Direct API access to the enterprise CCMS is in progress and will
+        remove the final manual step.
       </p>
       <div class="green-quote">
-        Designing each skill as a small, discrete unit means errors can be isolated at the
-        module level without disrupting the rest of the pipeline. The same principle used in
-        software engineering. Build once, reuse everywhere.
+        Building each skill as a small, discrete unit means a failure can be isolated at the module
+        level without disrupting the rest of the pipeline. Build once, reuse everywhere.
       </div>
-    </div>
-
-    <!-- ENGINEERING PROGRESSION -->
-    <div class="section">
-      <hr />
-      <span class="section-label">Engineering Progression</span>
-      <p>It follows a deliberate engineering arc, the same progression used by professional AI engineering teams:</p>
-      <div class="progression">
-        <div class="prog-item">
-          <span class="prog-arrow">→</span>
-          <div class="prog-content">
-            <strong>Deterministic model</strong>
-            <p>Built first. Rule-based, predictable, controlled outputs. Every input produces the same output. The foundation was made reliable before any intelligence was layered on top.</p>
-          </div>
-        </div>
-        <div class="prog-item">
-          <span class="prog-arrow">→</span>
-          <div class="prog-content">
-            <strong>JSON logging and observability</strong>
-            <p>The pipeline is fully instrumented. Every action is logged, traceable, and auditable, enabling debugging, improvement, and future metrics collection.</p>
-          </div>
-        </div>
-        <div class="prog-item">
-          <span class="prog-arrow">→</span>
-          <div class="prog-content">
-            <strong>Python processing</strong>
-            <p>Connective tissue that moves structured data intelligently between enterprise systems at each stage of the pipeline.</p>
-          </div>
-        </div>
-        <div class="prog-item">
-          <span class="prog-arrow">→</span>
-          <div class="prog-content">
-            <strong>Guardrails</strong>
-            <p>AI behavior is constrained by institutional knowledge: style guide, terminology file, and embedded XML templates, keeping quality consistent and outputs compliant.</p>
-          </div>
-        </div>
-        <div class="prog-item">
-          <span class="prog-arrow">→</span>
-          <div class="prog-content">
-            <strong>Agentic reasoning</strong>
-            <p>During testing, the model demonstrated agentic behavior: it identified a version mismatch unprompted and asked whether to extend logic to the next release, anticipating the next step without being instructed to. Full agentic deployment is in progress.</p>
-          </div>
-        </div>
-        <div class="prog-item">
-          <span class="prog-arrow">→</span>
-          <div class="prog-content">
-            <strong>Programmatic CCMS integration</strong>
-            <p>In progress. Direct API access to the enterprise content management system will eliminate the final manual handoff, completing a fully continuous pipeline from source data to published documentation.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ORCHESTRATOR LAYER -->
-    <div class="section">
-      <hr />
-      <span class="section-label">Orchestrator Layer</span>
       <p>
-        Three of the pipeline's core data-processing skills are linked and sequenced by a
-        Devin-native orchestrator, a coordination layer that manages execution, state
-        handoff, and routing programmatically. Rather than triggering each skill manually,
-        the orchestrator fires all three in a single automated run, passing structured output
-        from each skill directly to the next.
+        A pipeline only one person can run is a bottleneck, not a solution. Alongside the build I
+        wrote the design documentation and the user guides, then trained a colleague until they could
+        run and maintain the pipeline independently. That transfer is what let the next piece be
+        built collaboratively rather than by me alone. The effort has since moved past a single
+        team. I built a template capturing what works and the time it saves, and gave it to team
+        leads across the organization so each team can document its own process against a common
+        structure.
       </p>
-      <div class="orch-header">
-        <strong>DEVIN ORCHESTRATOR</strong>
-        <span>Single invocation: routes and sequences all three skills programmatically</span>
-      </div>
-      <div class="orch-skills">
-        <div class="orch-skill">
-          <div class="num">01</div>
-          <strong>Deferred Issue Validator</strong>
-          <div class="out">↓ annotated XML</div>
-        </div>
-        <div class="orch-skill">
-          <div class="num">02</div>
-          <strong>Resolution Detector</strong>
-          <div class="out">↓ status-annotated XML</div>
-        </div>
-        <div class="orch-skill">
-          <div class="num">03</div>
-          <strong>File Transform Engine</strong>
-          <div class="out">↓ 3 output files</div>
-        </div>
-      </div>
-      <p>
-        Devin's MCP server integration gives the orchestrator direct, programmatic access
-        to the engineering issue tracking system and the file system. Each skill runs as an
-        instrumented unit and the orchestrator reads its JSON-logged output to determine
-        routing for the next skill. No manual handoff, no context switch between tools.
-      </p>
-    </div>
-
-    <!-- THE SIX SKILLS -->
-    <div class="section">
-      <hr />
-      <span class="section-label">The Six Skills</span>
-      <div class="skill-cards">
-        <div class="skill-card">
-          <div class="skill-num">01</div>
-          <div class="skill-content">
-            <strong>Deferred issue validator</strong>
-            <p>Queries the engineering issue tracking system to identify deferred issues. Cross-references the master XML file, flags new deferred issues, and generates compliant first-draft documentation using the shared content generation engine.</p>
-            <div class="skill-tags">■ uses content generation engine &nbsp; ↓ annotated XML &nbsp; ↓ first-draft content</div>
-          </div>
-        </div>
-        <div class="skill-card">
-          <div class="skill-num">02</div>
-          <div class="skill-content">
-            <strong>Resolution detector</strong>
-            <p>Scans the engineering issue tracking system and enterprise knowledge base for resolved issues. Annotates the XML file with fixed-status comments, transforming it into a live document that reflects current release state at all times.</p>
-            <div class="skill-tags">↓ status-annotated XML</div>
-          </div>
-        </div>
-        <div class="skill-card">
-          <div class="skill-num">03</div>
-          <div class="skill-content">
-            <strong>File transformation engine</strong>
-            <p>Rebuilds the known issues file so only current deferred issues remain. Simultaneously generates two new XML files from scratch using embedded template structures: one for resolved issues, one for new features processing.</p>
-            <div class="skill-tags">↓ rebuilt known issues XML &nbsp; ↓ resolved issues XML &nbsp; ↓ new features XML</div>
-          </div>
-        </div>
-        <div class="skill-card">
-          <div class="skill-num">04</div>
-          <div class="skill-content">
-            <strong>New features extractor</strong>
-            <p>Simultaneously queries the engineering issue tracking system and design platform to pull data on new customer-facing capabilities, bridging engineering tickets and design artifacts automatically. A validation layer checks extracted data before it reaches content generation, and the skill leverages shared skills built by other teams to improve the quality of generated content.</p>
-            <div class="skill-tags">■ uses content generation engine &nbsp; ■ reuses cross-team shared skills &nbsp; ↓ validated new features XML &nbsp; ↓ first-draft content</div>
-          </div>
-        </div>
-        <div class="skill-card">
-          <div class="skill-num">05</div>
-          <div class="skill-content">
-            <strong>Content generation engine</strong>
-            <p>Shared service used across the pipeline. Takes structured data and generates compliant first-draft content using the institutional style guide and terminology file as guardrails, producing on-brand, accurate documentation before a human ever touches it.</p>
-            <div class="skill-tags">■ shared service · called by skills 01 and 04</div>
-          </div>
-        </div>
-        <div class="skill-card">
-          <div class="skill-num">06</div>
-          <div class="skill-content">
-            <strong>SME notification engine</strong>
-            <p>Automatically posts a comment in the engineering issue tracking system to the responsible subject matter expert when a new deferred issue is documented, closing the loop between automation and human review without manual tracking.</p>
-            <div class="skill-tags">↓ automated SME notification</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- WHAT THE PIPELINE PRODUCES -->
-    <div class="section">
-      <hr />
-      <span class="section-label">What the Pipeline Produces</span>
-      <p>Five outputs from one pipeline run, all compliant, correctly structured, and routed for review.</p>
-      <div class="outputs">
-        <div class="output-cell">
-          <span class="out-label">Output 01</span>
-          <strong>Rebuilt known issues XML</strong>
-        </div>
-        <div class="output-cell">
-          <span class="out-label">Output 02</span>
-          <strong>Resolved issues XML</strong>
-        </div>
-        <div class="output-cell">
-          <span class="out-label">Output 03</span>
-          <strong>New features XML</strong>
-        </div>
-        <div class="output-cell">
-          <span class="out-label">Output 04</span>
-          <strong>First-draft content for all sections</strong>
-        </div>
-        <div class="output-cell">
-          <span class="out-label">Output 05</span>
-          <strong>Automated SME review notification</strong>
-        </div>
-      </div>
-    </div>
-
-    <!-- ENABLEMENT -->
-    <div class="section">
-      <hr />
-      <span class="section-label">Enablement and Knowledge Transfer</span>
-      <p>
-        A pipeline only one person can run is a bottleneck, not a solution. Alongside the
-        build, I produced the documentation and training that let other people adopt it:
-        design documentation for how the system works, and user guides for how to run it.
+      <p id="in-market">
+        The most recent extension adapts the pipeline from NPI releases to in-market service pack
+        releases, the smaller, more frequent updates issued after launch. Rather than build a
+        parallel system, it reuses the same skills and content generation engine at that cadence. My
+        colleague and I made the adjustments needed to meet service pack guidelines in two to three
+        days, working a few hours a day.
       </p>
       <p>
-        I then trained a colleague directly on the automation workflow, to the point where
-        they can run and maintain the pipeline independently. That transfer is what allowed
-        the in-market extension to be built collaboratively rather than by me alone.
+        Both pipelines are past pilot and in pre-production, with formal metrics collected. Working
+        the process through with Devin, and the XML automation that followed, has saved us more than
+        70% of the manual effort of extracting the data and editing the content customers read. That
+        number matters mostly for what it bought. Data now comes straight from Jira instead of being
+        re-keyed, customers see the same structure and terminology every cycle, cross-referencing
+        catches what a manual pass misses, and the time comes back to the judgment work automation
+        cannot do, which is deciding what a change actually means for a customer and saying it
+        clearly.
       </p>
-      <div class="green-quote">
-        The same instinct that drives the documentation work drives the enablement work:
-        figure out what someone needs to know to do the thing themselves, then give them
-        exactly that, in the order they need it.
-      </div>
-      <p>
-        The effort is now expanding beyond a single team. I built a template capturing what
-        works and the time saved, and distributed it to team leads across the organization
-        so each team can document its own release notes process against a common structure,
-        turning scattered individual workflows into a comparable, org-wide practice.
-      </p>
-    </div>
-
-    <!-- CONTENT QUALITY -->
-    <div class="section">
-      <hr />
-      <span class="section-label">Content Quality Standards</span>
-      <p>
-        Automation multiplies whatever standard you feed it, so the standard had to come
-        first. The institutional style guide and terminology file are encoded directly into
-        the content generation engine as structural guardrails, not post-hoc checks. Every
-        draft the system produces is on-brand and terminologically consistent before a human
-        reviewer ever opens it.
-      </p>
-      <p>
-        Human review is preserved deliberately. The pipeline routes finished drafts to the
-        responsible subject matter expert automatically, so review happens where the
-        expertise lives, and the automation handles the tracking instead of a person.
-      </p>
-    </div>
-
-    <!-- TOOLS -->
-    <div class="section">
-      <hr />
-      <span class="section-label">Tools and Integration</span>
-      <div class="tools">
-        <span class="tool-tag">Python</span>
-        <span class="tool-tag">JSON processing</span>
-        <span class="tool-tag">XML manipulation</span>
-        <span class="tool-tag">Template-driven generation</span>
-        <span class="tool-tag">Devin</span>
-        <span class="tool-tag">MCP server integration</span>
-        <span class="tool-tag">Orchestrator layer</span>
-        <span class="tool-tag">Engineering issue tracking</span>
-        <span class="tool-tag">Enterprise knowledge base</span>
-        <span class="tool-tag">Design platform integration</span>
-        <span class="tool-tag">Enterprise CCMS</span>
-        <span class="tool-tag">Agentic workflow design</span>
-        <span class="tool-tag">Modular pipeline architecture</span>
-      </div>
-    </div>
-
-    <!-- IN-MARKET EXTENSION -->
-    <div class="section" id="in-market">
-      <hr />
-      <span class="section-label">In-Market (Service Pack) Extension</span>
-      <div class="status-box">
-        <div class="status-badge">
-          <strong>Pre-production</strong>
-          <span>built, no longer a pilot</span>
-        </div>
-        <div class="status-desc">
-          Built collaboratively with a colleague, adapting the NPI (New Product Introduction)
-          release notes pipeline to
-          automate release notes for in-market (service pack) releases: incremental updates
-          issued after a product's initial launch. This extension has progressed beyond pilot
-          and is now in pre-production.
-        </div>
-      </div>
-      <p>
-        Service pack cycles introduce a different shape of problem than an NPI release: smaller,
-        more frequent updates that still require the same rigor around deferred issues, resolved
-        issues, and new features tracking. Rather than building a parallel system, the in-market
-        pipeline reuses the same modular skills and content generation engine, adapted to handle
-        incremental change documentation at service pack cadence.
-      </p>
-      <p>
-        Several adjustments were required to bring the pipeline into conformance with service
-        pack release guidelines. Working a few hours a day, we completed those adjustments within
-        a 2&ndash;3 day period. The result: manual effort on service pack release notes is now
-        reduced by over 70%.
+      <p class="cs-meta" style="margin-top:1.6rem;">
+        Python &nbsp;·&nbsp; Jira (JQL) &nbsp;·&nbsp; JSON processing &nbsp;·&nbsp; XML manipulation &nbsp;·&nbsp; Devin
+        &nbsp;·&nbsp; MCP server integration &nbsp;·&nbsp; orchestration &nbsp;·&nbsp; agentic
+        workflow design &nbsp;·&nbsp; modular pipeline architecture &nbsp;·&nbsp; enterprise CCMS
       </p>
     </div>
 
