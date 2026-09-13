@@ -1,0 +1,4 @@
+# Scratch dumps from PDF/text inspection
+instr_dump*.txt
+pdf_dump.txt
+*.tmp
